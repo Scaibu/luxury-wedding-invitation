@@ -1,7 +1,6 @@
-'use client'
 
 import { motion, useScroll, useTransform } from 'motion/react'
-import Image from 'next/image'
+
 import { useRef } from 'react'
 import { GoldDivider, Petals, Sparkles } from '@/components/decor'
 import { wedding, weddingDateLine } from '@/lib/wedding-config'
@@ -22,12 +21,10 @@ export function WeddingDay() {
     >
       {/* cinematic mandap backdrop with slow camera move */}
       <motion.div style={{ scale, y }} className="absolute inset-0 -z-10">
-        <Image
+        <img
           src="/media/mandap.png"
           alt="The wedding mandap decorated with white roses, blue flowers and golden lamps"
-          fill
-          sizes="100vw"
-          className="object-cover"
+          className="absolute inset-0 h-full w-full object-cover"
         />
         <div
           aria-hidden="true"

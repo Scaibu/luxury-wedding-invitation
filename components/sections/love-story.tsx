@@ -1,4 +1,3 @@
-'use client'
 
 import {
   motion,
@@ -7,7 +6,7 @@ import {
   useTransform,
   type MotionValue,
 } from 'motion/react'
-import Image from 'next/image'
+
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react'
 import {
   Eyebrow,
@@ -175,14 +174,11 @@ function StackedPanel({
               }}
               className="absolute inset-0"
             >
-              <Image
+              <img
                 src={image || '/placeholder.svg'}
                 alt={label}
-                fill
-                sizes="(max-width: 640px) 86vw, 400px"
-                className="object-cover object-center"
-                priority={index === 0}
-                loading={index === 0 ? undefined : 'lazy'}
+                className="absolute inset-0 h-full w-full object-cover object-center"
+                loading={index === 0 ? 'eager' : 'lazy'}
               />
             </motion.div>
           </div>

@@ -1,7 +1,6 @@
-'use client'
 
 import { AnimatePresence, motion } from 'motion/react'
-import Image from 'next/image'
+
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Eyebrow, GoldDivider, Petals } from '@/components/decor'
 import { HeartNavButton } from '@/components/heart-nav-button'
@@ -332,16 +331,14 @@ export function Memories() {
                             </span>
                           </div>
                         ) : (
-                          <Image
+                          <img
                             src={m.src || '/placeholder.svg'}
                             alt=""
-                            fill
-                            sizes="(max-width: 480px) 45vw, (max-width: 1024px) 40vw, 240px"
-                            className="object-cover"
+                            className="absolute inset-0 h-full w-full object-cover"
                             onError={() =>
                               setFailed((f) => ({ ...f, [m.id]: true }))
                             }
-                            priority={i < 2}
+                            loading={i < 2 ? 'eager' : 'lazy'}
                           />
                         )}
                         {/* caption printed over the photo */}
@@ -380,12 +377,10 @@ export function Memories() {
                       }}
                     >
                       {!failed[m.id] && (
-                        <Image
+                        <img
                           src={m.src || '/placeholder.svg'}
                           alt=""
-                          fill
-                          sizes="(max-width: 480px) 45vw, 240px"
-                          className="object-cover object-bottom"
+                          className="absolute inset-0 h-full w-full object-cover object-bottom"
                         />
                       )}
                     </div>

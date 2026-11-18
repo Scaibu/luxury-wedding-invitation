@@ -1,4 +1,3 @@
-'use client'
 
 import { useCallback, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'

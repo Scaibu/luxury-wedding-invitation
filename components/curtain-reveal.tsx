@@ -1,8 +1,7 @@
-'use client'
 
 import { motion, AnimatePresence } from 'motion/react'
 import { useEffect, useState } from 'react'
-import Image from 'next/image'
+
 import { Petals, Sparkles } from '@/components/decor'
 import { wedding } from '@/lib/wedding-config'
 
@@ -98,13 +97,10 @@ export function CurtainReveal({ onDone }: { onDone: () => void }) {
     >
       {/* blank decorative template as the full background */}
       <div className="absolute inset-0">
-        <Image
+        <img
           src="/media/blank-templates.png"
           alt="Decorative wedding invitation background"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
+          className="absolute inset-0 h-full w-full object-cover"
         />
         <div
           aria-hidden="true"
@@ -159,12 +155,10 @@ export function CurtainReveal({ onDone }: { onDone: () => void }) {
                   className="relative size-28 overflow-hidden rounded-full border-2 shadow-[0_8px_20px_-10px_oklch(0.5_0.08_74/0.6)] sm:size-32"
                   style={{ borderColor: 'var(--gold)' }}
                 >
-                  <Image
+                  <img
                     src="/media/gold_festive_ganesh_india.png"
                     alt="Lord Ganesha"
-                    fill
-                    sizes="128px"
-                    className="object-cover"
+                    className="absolute inset-0 h-full w-full object-cover"
                   />
                 </div>
                 <div
@@ -228,12 +222,10 @@ export function CurtainReveal({ onDone }: { onDone: () => void }) {
           {showBride && (
             <>
               <div className="relative mt-3 h-16 w-64 sm:h-20 sm:w-80">
-                <Image
+                <img
                   src="/media/gathbandhan.png"
                   alt="Gathbandhan"
-                  fill
-                  sizes="320px"
-                  className="object-contain"
+                  className="absolute inset-0 h-full w-full object-contain"
                 />
               </div>
               <motion.div

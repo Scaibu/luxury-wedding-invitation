@@ -1,6 +1,5 @@
-'use client'
 
-import Image from 'next/image'
+
 import { motion } from 'motion/react'
 import { MapPin, Navigation, Clock } from 'lucide-react'
 import { Eyebrow, GoldDivider, SectionShell, FloralSprig } from '@/components/decor'
@@ -33,11 +32,9 @@ export function Venue() {
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           className="group relative overflow-hidden rounded-[2rem] border border-primary/25 bg-card shadow-[0_24px_60px_-40px_rgba(120,95,40,0.55)]"
         >
-          <Image
+          <img
             src="/media/venue.png"
             alt={`${wedding.venue.name} venue exterior`}
-            width={1200}
-            height={800}
             className="h-72 w-full object-cover transition-transform duration-[1.4s] group-hover:scale-105 sm:h-full"
           />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-foreground/40 via-transparent to-transparent" />

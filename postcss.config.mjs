@@ -1,8 +1,3 @@
-/** @type {import('postcss-load-config').Config} */
-const config = {
-  plugins: {
-    '@tailwindcss/postcss': {},
-  },
-}
-
-export default config
+// PostCSS config — only used if running standalone postcss-cli.
+// When using Vite, Tailwind is handled by @tailwindcss/vite plugin instead.
+export default {}

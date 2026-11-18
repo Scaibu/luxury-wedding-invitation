@@ -1,4 +1,3 @@
-'use client'
 
 import {
   motion,
@@ -6,7 +5,7 @@ import {
   useScroll,
   useTransform,
 } from 'motion/react'
-import Image from 'next/image'
+
 import { useEffect, useRef, useState } from 'react'
 import { Eyebrow, GoldDivider, HeartMark, Petals, Sparkles } from '@/components/decor'
 import { cn } from '@/lib/utils'
@@ -247,13 +246,11 @@ const SEAL_IMAGE = '/media/wedding-logo.jpg'
 function EventSeal() {
   return (
     <span className="relative inline-block size-11 shrink-0 overflow-hidden rounded-full border border-accent/50 bg-card shadow-[0_6px_16px_-10px_oklch(0.45_0.08_240/0.7)]">
-      <Image
+      <img
         src={SEAL_IMAGE || '/placeholder.svg'}
         alt=""
-        fill
-        sizes="44px"
-        aria-hidden="true"
-        className="object-cover"
+        aria-hidden={true}
+        className="absolute inset-0 h-full w-full object-cover"
       />
     </span>
   )
@@ -344,12 +341,10 @@ function EventRow({
         {c.video ? (
           <AutoVideo video={c.video} name={c.name} />
         ) : (
-          <Image
+          <img
             src={c.image || '/placeholder.svg'}
             alt={c.name}
-            fill
-            sizes="(max-width: 768px) 88vw, 420px"
-            className="object-cover transition-transform duration-[900ms] ease-out group-hover/media:scale-[1.08]"
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-out group-hover/media:scale-[1.08]"
           />
         )}
 

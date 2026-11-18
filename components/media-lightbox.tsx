@@ -1,7 +1,6 @@
-'use client'
 
 import { AnimatePresence, motion } from 'motion/react'
-import Image from 'next/image'
+
 import { useEffect, useRef } from 'react'
 import { useMusic } from '@/components/music-provider'
 import type { MediaItem } from '@/lib/wedding-config'
@@ -77,12 +76,10 @@ export function MediaLightbox({
           >
             <div className="relative aspect-[4/5] w-full bg-secondary/40 sm:aspect-[9/16]">
               {item.type === 'image' ? (
-                <Image
+                <img
                   src={item.src || '/placeholder.svg'}
                   alt={item.caption ?? item.title}
-                  fill
-                  sizes="(max-width: 640px) 100vw, 480px"
-                  className="object-cover"
+                  className="absolute inset-0 h-full w-full object-cover"
                 />
               ) : (
                 <video

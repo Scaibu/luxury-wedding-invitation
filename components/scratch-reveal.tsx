@@ -1,4 +1,3 @@
-'use client'
 
 import { Pointer } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'

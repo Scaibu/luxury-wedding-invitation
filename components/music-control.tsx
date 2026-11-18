@@ -1,4 +1,3 @@
-'use client'
 
 import { AnimatePresence, motion } from 'motion/react'
 import { useMusic } from '@/components/music-provider'
