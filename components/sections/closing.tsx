@@ -13,6 +13,8 @@ export function Closing() {
         className="absolute inset-0 -z-10 h-full w-full object-cover"
       />
       <div className="absolute inset-0 bg-gradient-to-b from-background via-secondary/50 to-accent/40" />
+      {/* phones only: soften the busy tassel artwork so the text stays readable */}
+      <div aria-hidden="true" className="absolute inset-0 bg-background/60 sm:hidden" />
       <Petals count={14} className="opacity-70" />
       <Sparkles count={18} className="opacity-70" />
 

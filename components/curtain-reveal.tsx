@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 
 import { Petals, Sparkles } from '@/components/decor'
 import { wedding } from '@/lib/wedding-config'
+import { useFitScale } from '@/lib/use-fit-scale'
 
 const NAMAH = '॥ श्री गणेशाय नमः ॥'
 const SHLOK_LINE_1 = '॥वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ'
@@ -59,6 +60,8 @@ type Phase =
 export function CurtainReveal({ onDone }: { onDone: () => void }) {
   const [phase, setPhase] = useState<Phase>('namah')
   const [scrollArmed, setScrollArmed] = useState(false)
+  // shrink the whole block on short screens so nothing is clipped top/bottom
+  const fit = useFitScale(780)
 
   useEffect(() => {
     if (!scrollArmed) return
@@ -120,7 +123,10 @@ export function CurtainReveal({ onDone }: { onDone: () => void }) {
             once the cue appears, it gets pushed down and actually fills the empty
             space at the bottom instead of leaving it blank */}
       <div className="relative z-30 flex h-full flex-col items-center justify-center gap-2 px-6 pb-10 pt-14 text-center sm:pt-16">
-        <div className="flex flex-col items-center gap-2">
+        <div
+          className="flex flex-col items-center gap-2"
+          style={fit < 1 ? { transform: `scale(${fit})`, transformOrigin: 'center' } : undefined}
+        >
           {/* श्री गणेशाय नमः — fades in first, before anything else appears */}
           <Reveal
             text={NAMAH}

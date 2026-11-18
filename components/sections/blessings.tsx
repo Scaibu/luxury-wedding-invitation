@@ -137,7 +137,7 @@ export function Blessings() {
                   className="absolute right-5 top-5 h-4 w-4 text-primary/50"
                   aria-hidden="true"
                 />
-                <p className="font-serif text-lg leading-relaxed text-foreground text-pretty">
+                <p className="pr-6 font-serif text-lg leading-relaxed text-foreground text-pretty sm:pr-0">
                   &ldquo;{w.message}&rdquo;
                 </p>
                 <footer className="mt-3 text-[0.68rem] font-medium tracking-[0.3em] text-accent-foreground/80 uppercase">
