@@ -1,4 +1,3 @@
-
 import {
   motion,
   useMotionValueEvent,
@@ -6,7 +5,6 @@ import {
   useTransform,
   type MotionValue,
 } from 'motion/react'
-
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react'
 import {
   Eyebrow,
@@ -154,12 +152,13 @@ function StackedPanel({
   return (
     <div className="flex h-[100dvh] items-center justify-center px-4 pb-16 pt-52 sm:pt-56 lg:pb-24 lg:pt-32">
       <motion.div
-        transformTemplate={(_, generated) => generated}
         style={{
           y,
           scale,
           filter,
           zIndex: index,
+          transformTemplate: ({ y, scale }: { y: string; scale: string }) =>
+            `translate3d(0, ${y}, 0) scale(${scale})`,
           willChange: 'transform, filter',
         }}
         className="relative w-full max-w-[300px] origin-top sm:max-w-[340px] lg:max-w-[370px]"
@@ -167,9 +166,10 @@ function StackedPanel({
         <div className="relative rounded-[26px] border border-accent/40 bg-card p-3 shadow-[0_36px_80px_-38px_oklch(0.45_0.08_240/0.55)]">
           <div className="relative aspect-[4/5] max-h-[46dvh] w-full overflow-hidden rounded-[18px] bg-card lg:max-h-[52dvh]">
             <motion.div
-              transformTemplate={(_, generated) => generated}
               style={{
                 scale: imageScale,
+                transformTemplate: ({ scale }: { scale: string }) =>
+                  `translate3d(0, 0, 0) scale(${scale})`,
                 willChange: 'transform',
               }}
               className="absolute inset-0"
@@ -188,21 +188,18 @@ function StackedPanel({
           />
         </div>
 
-
-        <span
-          className={`absolute -top-4 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-accent/50 bg-card px-4 py-1 font-serif text-xs italic text-accent-foreground shadow-sm transition-opacity duration-500 ${
-            isActive ? 'opacity-100' : 'opacity-0'
-          }`}
+        <motion.div
+          animate={{
+            opacity: isActive ? 1 : near ? 0.35 : 0,
+            y: isActive ? 0 : 6,
+          }}
+          transition={{ duration: 0.35 }}
+          className="pointer-events-none absolute -bottom-10 inset-x-0 text-center"
         >
-          Chapter {index + 1}
-        </span>
-        <span
-          className={`absolute -bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-accent/40 bg-card px-4 py-1 font-serif text-[0.72rem] text-muted-foreground shadow-sm transition-opacity duration-500 lg:hidden ${
-            isActive ? 'opacity-100' : 'opacity-0'
-          }`}
-        >
-          {label}
-        </span>
+          <span className="inline-block rounded-full border border-accent/40 bg-card/90 px-3.5 py-1 text-[0.62rem] font-medium tracking-[0.24em] text-accent-foreground backdrop-blur-sm">
+            {storyChapters[index]?.when ?? `Chapter 0${index + 1}`}
+          </span>
+        </motion.div>
       </motion.div>
     </div>
   )
@@ -217,74 +214,105 @@ function HeartTimeline({
   active: number
   metrics: DeckMetrics
 }) {
-  const y = useDeckPin(progress, metrics)
-  const fill = useTransform(progress, [0.04, 0.9], [0, 1])
+  const pin = useDeckPin(progress, metrics)
+  const y = useTransform(pin, (p) => p)
+
+  const lineProgress = useTransform(
+    progress,
+    [0, (TOTAL - 1) / TOTAL],
+    [0, 100],
+    { clamp: true },
+  )
 
   return (
-    <div className="hidden lg:block">
-      <motion.div
+    <div className="relative hidden h-[100dvh] items-center lg:flex">
+      <motion.aside
+        aria-label="Story chapters"
         style={{
           y,
-          height: metrics.vh || undefined,
+          transformTemplate: ({ y }: { y: string }) =>
+            `translate3d(0, ${y}, 0)`,
           willChange: 'transform',
         }}
-        className="flex h-[100dvh] items-center pt-24 sm:pt-28"
+        className="relative my-auto w-full max-w-sm"
       >
-        <ol className="relative flex flex-col justify-center gap-12">
+        <div className="relative flex flex-col justify-center gap-7 rounded-3xl border border-accent/40 bg-card/85 p-8 shadow-[0_30px_70px_-30px_oklch(0.45_0.08_240/0.45)] backdrop-blur-md">
           <span
             aria-hidden="true"
-            className="absolute bottom-6 left-[18px] top-6 w-[2px] rounded-full bg-accent/20"
+            className="absolute bottom-10 left-[49px] top-10 w-px bg-accent/30"
           />
           <motion.span
             aria-hidden="true"
-            style={{ scaleY: fill }}
-            className="absolute bottom-6 left-[18px] top-6 w-[2px] origin-top rounded-full bg-gradient-to-b from-accent to-accent/60"
+            style={{
+              height: useTransform(lineProgress, (v) => `${v}%`),
+              maxHeight: 'calc(100% - 5rem)',
+              transformTemplate: () => 'translate3d(0, 0, 0)',
+            }}
+            className="absolute left-[49px] top-10 w-px bg-accent shadow-[0_0_8px_oklch(0.86_0.09_85)]"
           />
 
           {storyChapters.map((c, i) => {
             const reached = i <= active
-            const isActive = i === active
+            const isCur = i === active
             return (
-              <li
+              <div
                 key={c.label}
-                aria-current={isActive ? 'step' : undefined}
-                className="relative flex items-center gap-5"
+                className="relative flex items-center gap-4 transition-transform duration-300"
+                style={{
+                  transform: isCur ? 'translateX(4px)' : 'translateX(0)',
+                }}
               >
-                <HeartMark filled={reached} active={isActive} />
-                <div>
+                <HeartMark filled={reached} active={isCur} />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <p
+                      className={`text-[0.6rem] font-medium tracking-[0.28em] uppercase transition-colors duration-300 ${
+                        reached
+                          ? 'text-accent-foreground'
+                          : 'text-muted-foreground/60'
+                      }`}
+                    >
+                      {c.when}
+                    </p>
+                    <span
+                      className={`text-[0.55rem] font-medium tracking-[0.2em] transition-opacity duration-300 ${
+                        isCur
+                          ? 'text-accent-foreground opacity-90'
+                          : 'opacity-0'
+                      }`}
+                    >
+                      Now Playing
+                    </span>
+                  </div>
                   <p
-                    className={`font-serif text-xs tracking-[0.28em] transition-colors duration-500 ${
-                      reached ? 'text-accent-foreground' : 'text-muted-foreground/50'
-                    }`}
-                  >
-                    {String(i + 1).padStart(2, '0')}
-                  </p>
-                  <p
-                    className={`mt-1 max-w-[15rem] text-pretty font-serif text-lg leading-snug transition-all duration-500 xl:text-xl ${
-                      isActive
-                        ? 'italic text-foreground'
+                    className={`mt-0.5 truncate font-serif text-base transition-colors duration-300 ${
+                      isCur
+                        ? 'font-medium italic text-foreground'
                         : reached
-                          ? 'text-foreground/70'
-                          : 'text-muted-foreground/55'
+                          ? 'text-foreground/80'
+                          : 'text-muted-foreground/65'
                     }`}
                   >
                     {c.label}
                   </p>
-                  <p
-                    className={`max-w-[15rem] text-pretty font-serif text-[0.8rem] italic leading-relaxed text-muted-foreground transition-all duration-500 ${
-                      isActive
-                        ? 'mt-2 max-h-24 opacity-100'
-                        : 'mt-0 max-h-0 overflow-hidden opacity-0'
-                    }`}
+                  <motion.p
+                    initial={false}
+                    animate={{
+                      opacity: isCur ? 1 : 0,
+                      height: isCur ? 'auto' : 0,
+                      marginTop: isCur ? 4 : 0,
+                    }}
+                    transition={{ duration: 0.35, ease: 'easeOut' }}
+                    className="overflow-hidden font-serif text-xs italic leading-snug text-muted-foreground"
                   >
-                    {c.note}
-                  </p>
+                    &ldquo;{c.note}&rdquo;
+                  </motion.p>
                 </div>
-              </li>
+              </div>
             )
           })}
-        </ol>
-      </motion.div>
+        </div>
+      </motion.aside>
     </div>
   )
 }
@@ -296,32 +324,58 @@ function HeartRailMobile({
   progress: MotionValue<number>
   active: number
 }) {
-  const fill = useTransform(progress, [0.04, 0.9], [0, 1])
+  const line = useTransform(
+    progress,
+    [0, (TOTAL - 1) / TOTAL],
+    [0, 100],
+    { clamp: true },
+  )
 
   return (
-    <div className="mt-5 flex flex-col items-center gap-2.5 lg:hidden">
-      <div className="relative flex max-w-full items-center justify-center gap-3 sm:gap-8">
+    <div className="mt-5 flex justify-center px-4 lg:hidden">
+      <div className="relative flex items-center gap-4 rounded-full border border-accent/40 bg-card/90 px-4 py-2 shadow-sm backdrop-blur-md">
         <span
           aria-hidden="true"
-          className="absolute left-3 right-3 top-1/2 h-[2px] -translate-y-1/2 rounded-full bg-accent/20"
+          className="absolute inset-x-6 top-1/2 h-px -translate-y-1/2 bg-accent/25"
         />
         <motion.span
           aria-hidden="true"
-          style={{ scaleX: fill }}
-          className="absolute left-3 right-3 top-1/2 h-[2px] -translate-y-1/2 origin-left rounded-full bg-gradient-to-r from-accent to-accent/60"
+          style={{
+            width: useTransform(line, (v) => `calc(${v}% * 0.72)`),
+          }}
+          className="absolute left-6 top-1/2 h-px -translate-y-1/2 bg-accent shadow-[0_0_6px_oklch(0.86_0.09_85)]"
         />
-        {storyChapters.map((c, i) => (
-          <span key={c.label} className="relative scale-[0.72] sm:scale-90">
-            <HeartMark filled={i <= active} active={i === active} />
-          </span>
-        ))}
+
+        {storyChapters.map((c, i) => {
+          const reached = i <= active
+          const isCur = i === active
+          return (
+            <div key={c.label} className="relative z-10 flex items-center">
+              <span
+                className={`relative flex size-5 items-center justify-center rounded-full border transition-all duration-300 ${
+                  isCur
+                    ? 'scale-125 border-accent bg-accent/20 shadow-[0_0_0_3px_oklch(0.86_0.09_85/0.25)]'
+                    : reached
+                      ? 'border-accent/80 bg-card'
+                      : 'border-accent/30 bg-card/60'
+                }`}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  className={`size-2.5 transition-colors ${
+                    reached ? 'text-accent' : 'text-muted-foreground/30'
+                  }`}
+                  fill={reached ? 'currentColor' : 'none'}
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                </svg>
+              </span>
+            </div>
+          )
+        })}
       </div>
-      <p
-        aria-live="polite"
-        className="font-serif text-[0.7rem] italic tracking-[0.22em] text-accent-foreground"
-      >
-        Chapter {active + 1} of {TOTAL}
-      </p>
     </div>
   )
 }
@@ -339,7 +393,12 @@ function StoryHeading({
 
   return (
     <motion.div
-      style={{ y, willChange: 'transform' }}
+      style={{
+        y,
+        transformTemplate: ({ y }: { y: string }) =>
+          `translate3d(0, ${y}, 0)`,
+        willChange: 'transform',
+      }}
       className="pointer-events-none absolute inset-x-0 top-0 z-30 bg-gradient-to-b from-background via-background to-transparent pb-10 pt-4 text-center"
     >
       <Eyebrow>A little about us</Eyebrow>
